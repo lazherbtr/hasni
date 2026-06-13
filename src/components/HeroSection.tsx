@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const HERO_IMG =
-  "https://media.base44.com/images/public/6a2d7e54e9b902b7fc9851aa/9f68142f6_generated_73740b1e.png";
+  "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&q=80";
 
 export default function HeroSection() {
   const { t, isRTL } = useLanguage();

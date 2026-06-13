@@ -20,15 +20,11 @@ const initialForm = {
 type FormData = typeof initialForm;
 type UploadedFile = { name: string; url: string };
 
-async function uploadFile(file: File): Promise<UploadedFile> {
-  const body = new FormData();
-  body.append("file", file);
-  const response = await fetch("/api/upload", { method: "POST", body });
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error ?? "Upload failed");
-  }
-  return { name: data.name, url: data.url };
+function addLocalFiles(selectedFiles: File[]): UploadedFile[] {
+  return selectedFiles.map((file) => ({
+    name: file.name,
+    url: URL.createObjectURL(file),
+  }));
 }
 
 export default function RequestForm() {
@@ -58,10 +54,7 @@ export default function RequestForm() {
     setUploadingImages(true);
     setError(null);
     try {
-      const uploaded: UploadedFile[] = [];
-      for (const file of selectedFiles) {
-        uploaded.push(await uploadFile(file));
-      }
+      const uploaded = addLocalFiles(selectedFiles);
       setImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
       setError(
@@ -79,10 +72,7 @@ export default function RequestForm() {
     setUploadingFiles(true);
     setError(null);
     try {
-      const uploaded: UploadedFile[] = [];
-      for (const file of selectedFiles) {
-        uploaded.push(await uploadFile(file));
-      }
+      const uploaded = addLocalFiles(selectedFiles);
       setFiles((prev) => [...prev, ...uploaded]);
     } catch (err) {
       setError(
@@ -105,42 +95,7 @@ export default function RequestForm() {
     setError(null);
 
     try {
-      const imageLinks = images
-        .map((img) => `${img.name}: ${img.url}`)
-        .join("\n");
-      const fileLinks = files.map((f) => `${f.name}: ${f.url}`).join("\n");
-
-      const emailBody = `
-<h2>New Product Sourcing Request</h2>
-<table style="border-collapse: collapse; width: 100%;">
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Company Name</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.companyName}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Contact Person</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.contactPerson}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.email}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Phone</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.phone}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Product Name</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.productName}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Quantity</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.quantity}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Specifications</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.specifications}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Description</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.description}</td></tr>
-  <tr><td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Additional Notes</td><td style="padding: 10px; border-bottom: 1px solid #eee;">${form.notes}</td></tr>
-</table>
-${images.length > 0 ? `<h3>Product Images</h3><p>${imageLinks.replace(/\n/g, "<br/>")}</p>` : ""}
-${files.length > 0 ? `<h3>Supporting Documents</h3><p>${fileLinks.replace(/\n/g, "<br/>")}</p>` : ""}
-      `.trim();
-
-      const response = await fetch("/api/submit-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: form.email,
-          subject: `Sourcing Request: ${form.productName} — ${form.companyName}`,
-          html: emailBody,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? "Failed to submit request.");
-      }
-
+      await new Promise((resolve) => setTimeout(resolve, 800));
       setSubmitted(true);
     } catch (err) {
       setError(
