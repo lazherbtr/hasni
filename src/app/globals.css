@@ -1,26 +1,234 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-dm-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-playfair);
+  --font-display: var(--font-playfair);
+  --color-brand-text: #3d3630;
+  --color-brand-muted: #7a7168;
+  --color-brand-subtle: #a89f96;
+  --color-brand-accent: #b87333;
+  --color-brand-accent-hover: #9a6028;
+  --color-brand-accent-light: #f5e8dc;
+  --color-brand-accent-soft: #faf3ed;
+  --color-brand-sage: #6b8f71;
+  --color-brand-sage-light: #e8f0ea;
+  --color-brand-surface: rgba(255, 255, 255, 0.78);
+  --color-brand-surface-solid: #fffcfa;
+  --color-brand-surface-alt: rgba(255, 252, 248, 0.6);
+  --color-brand-page: #faf6f1;
+  --color-brand-border: rgba(184, 115, 51, 0.14);
+  --color-brand-border-light: rgba(184, 115, 51, 0.08);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: #faf6f1;
+  --foreground: #3d3630;
+  --card: #fffcfa;
+  --card-foreground: #3d3630;
+  --primary: #b87333;
+  --primary-foreground: #fffcfa;
+  --muted: #f3ede6;
+  --muted-foreground: #7a7168;
+  --accent: #b87333;
+  --accent-foreground: #fffcfa;
+  --border: rgba(184, 115, 51, 0.14);
+  --input: rgba(184, 115, 51, 0.14);
+  --ring: #b87333;
+  --radius: 1rem;
+  --font-playfair: var(--font-playfair-display), ui-serif, Georgia, serif;
+  --font-dm-sans: var(--font-dm-sans-var), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-tajawal), "Tajawal", ui-sans-serif, sans-serif;
+  --font-arabic-display: var(--font-el-messiri), "El Messiri", ui-serif, serif;
+}
+
+html[lang="ar"] {
+  --font-playfair: var(--font-arabic-display);
+  --font-dm-sans: var(--font-arabic);
+  --font-heading: var(--font-arabic-display);
+  --font-display: var(--font-arabic-display);
+  --font-sans: var(--font-arabic);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-brand-page text-brand-text antialiased;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+
+  html[lang="ar"] body {
+    font-family: var(--font-arabic);
+    font-size: 1.0625rem;
+    line-height: 1.8;
+  }
+
+  html[lang="ar"] .font-display,
+  html[lang="ar"] .font-heading {
+    font-family: var(--font-arabic-display);
+    letter-spacing: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .site-container {
+    @apply max-w-5xl mx-auto px-5 sm:px-8 lg:px-10;
+  }
+
+  .page-glow {
+    @apply fixed inset-0 -z-10 overflow-hidden pointer-events-none;
+  }
+
+  .section-block {
+    @apply py-16 sm:py-20;
+  }
+
+  .section-header {
+    @apply text-center max-w-2xl mx-auto mb-12 sm:mb-14;
+  }
+
+  .section-label {
+    @apply inline-block text-[11px] font-semibold tracking-[0.25em] uppercase text-brand-accent mb-4 px-4 py-1.5 rounded-full bg-brand-accent-light/60 border border-brand-border;
+  }
+
+  .section-title {
+    @apply font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-brand-text leading-[1.15] tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply mt-4 text-base sm:text-lg leading-relaxed text-brand-muted;
+  }
+
+  .glass-card {
+    @apply bg-brand-surface backdrop-blur-xl border border-brand-border rounded-3xl shadow-[0_8px_40px_-12px_rgba(184,115,51,0.18)];
+  }
+
+  .soft-card {
+    @apply bg-brand-surface-solid/90 border border-brand-border-light rounded-2xl shadow-[0_4px_24px_-8px_rgba(61,54,48,0.08)] transition-all duration-300 hover:shadow-[0_12px_40px_-12px_rgba(184,115,51,0.2)] hover:-translate-y-0.5;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-brand-accent text-white px-7 py-3 text-sm font-semibold rounded-full hover:bg-brand-accent-hover transition-all duration-300 shadow-[0_4px_20px_-4px_rgba(184,115,51,0.55)] hover:shadow-[0_8px_28px_-4px_rgba(184,115,51,0.5)] hover:-translate-y-px;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 text-brand-muted hover:text-brand-accent px-5 py-2.5 text-sm font-medium rounded-full hover:bg-brand-accent-soft transition-all duration-200;
+  }
+
+  .icon-ring {
+    @apply w-11 h-11 flex items-center justify-center rounded-2xl bg-gradient-to-br from-brand-accent-light to-brand-accent-soft text-brand-accent border border-brand-border shadow-sm;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-accent to-[#d4956a] bg-clip-text text-transparent;
+  }
+
+  .divider-ornament {
+    @apply flex items-center justify-center gap-3 my-2;
+  }
+
+  .divider-ornament::before,
+  .divider-ornament::after {
+    content: "";
+    @apply h-px flex-1 max-w-[60px] bg-gradient-to-r from-transparent to-brand-border;
+  }
+
+  .divider-ornament::after {
+    @apply bg-gradient-to-l;
+  }
+
+  /* Arabic typography — larger, warmer, better fit for RTL */
+  html[lang="ar"] .section-label {
+    @apply text-sm font-bold tracking-normal normal-case px-5 py-2;
+  }
+
+  html[lang="ar"] .section-title {
+    @apply text-[2rem] sm:text-[2.65rem] lg:text-[3.15rem] font-bold leading-[1.45];
+  }
+
+  html[lang="ar"] .section-subtitle {
+    @apply text-lg sm:text-xl leading-[1.95];
+  }
+
+  html[lang="ar"] .btn-primary,
+  html[lang="ar"] .btn-ghost {
+    @apply text-base font-bold px-8 py-3.5;
+  }
+
+  html[lang="ar"] .hero-title {
+    @apply text-[2.35rem] sm:text-[3rem] lg:text-[3.5rem] font-bold leading-[1.45];
+  }
+
+  html[lang="ar"] .hero-title .italic {
+    font-style: normal;
+  }
+
+  html[lang="ar"] .hero-description {
+    @apply text-lg sm:text-xl leading-[2];
+  }
+
+  html[lang="ar"] .stat-value {
+    @apply text-[1.65rem] sm:text-[1.85rem];
+  }
+
+  html[lang="ar"] .stat-label {
+    @apply text-xs sm:text-sm;
+  }
+
+  html[lang="ar"] .card-body {
+    @apply text-base leading-[1.9];
+  }
+
+  html[lang="ar"] .card-title {
+    @apply text-xl sm:text-2xl font-bold leading-snug;
+  }
+
+  html[lang="ar"] .soft-card .card-title:not(.text-xl) {
+    @apply text-lg sm:text-xl;
+  }
+
+  html[lang="ar"] nav .font-display {
+    @apply text-2xl;
+  }
+
+  html[lang="ar"] input,
+  html[lang="ar"] textarea,
+  html[lang="ar"] select {
+    font-family: var(--font-arabic);
+    font-size: 1rem;
+  }
 }
