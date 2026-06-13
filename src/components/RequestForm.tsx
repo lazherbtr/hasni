@@ -3,7 +3,6 @@
 import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useLanguage } from "@/lib/i18n";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { base44 } from "@/hook/base44Clinet";
 import { Upload, CheckCircle2, FileText, X, Loader2 } from "lucide-react";
 
 const initialForm = {
@@ -20,6 +19,17 @@ const initialForm = {
 
 type FormData = typeof initialForm;
 type UploadedFile = { name: string; url: string };
+
+async function uploadFile(file: File): Promise<UploadedFile> {
+  const body = new FormData();
+  body.append("file", file);
+  const response = await fetch("/api/upload", { method: "POST", body });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error ?? "Upload failed");
+  }
+  return { name: data.name, url: data.url };
+}
 
 export default function RequestForm() {
   const { t, isRTL } = useLanguage();
@@ -50,8 +60,7 @@ export default function RequestForm() {
     try {
       const uploaded: UploadedFile[] = [];
       for (const file of selectedFiles) {
-        const result = await base44.integrations.Core.UploadFile({ file });
-        uploaded.push({ name: file.name, url: result.file_url });
+        uploaded.push(await uploadFile(file));
       }
       setImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
@@ -72,8 +81,7 @@ export default function RequestForm() {
     try {
       const uploaded: UploadedFile[] = [];
       for (const file of selectedFiles) {
-        const result = await base44.integrations.Core.UploadFile({ file });
-        uploaded.push({ name: file.name, url: result.file_url });
+        uploaded.push(await uploadFile(file));
       }
       setFiles((prev) => [...prev, ...uploaded]);
     } catch (err) {
@@ -119,11 +127,19 @@ ${images.length > 0 ? `<h3>Product Images</h3><p>${imageLinks.replace(/\n/g, "<b
 ${files.length > 0 ? `<h3>Supporting Documents</h3><p>${fileLinks.replace(/\n/g, "<br/>")}</p>` : ""}
       `.trim();
 
-      await base44.integrations.Core.SendEmail({
-        to: form.email,
-        subject: `Sourcing Request: ${form.productName} — ${form.companyName}`,
-        body: emailBody,
+      const response = await fetch("/api/submit-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: form.email,
+          subject: `Sourcing Request: ${form.productName} — ${form.companyName}`,
+          html: emailBody,
+        }),
       });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error ?? "Failed to submit request.");
+      }
 
       setSubmitted(true);
     } catch (err) {
