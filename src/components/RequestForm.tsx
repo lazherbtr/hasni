@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useLanguage } from "@/lib/i18n";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Upload, CheckCircle2, FileText, X, Loader2 } from "lucide-react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { CheckCircle2, FileText, Loader2, Upload, X } from "lucide-react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
 const initialForm = {
   companyName: "",
@@ -18,13 +18,20 @@ const initialForm = {
 };
 
 type FormData = typeof initialForm;
-type UploadedFile = { name: string; url: string };
+type UploadedFile = { name: string; url: string; file: File };
+
+const CONTACT_EMAIL = "lazherbou3@gmail.com";
 
 function addLocalFiles(selectedFiles: File[]): UploadedFile[] {
   return selectedFiles.map((file) => ({
     name: file.name,
     url: URL.createObjectURL(file),
+    file,
   }));
+}
+
+function revokeUploadedFiles(uploads: UploadedFile[]) {
+  uploads.forEach((upload) => URL.revokeObjectURL(upload.url));
 }
 
 export default function RequestForm() {
@@ -57,9 +64,7 @@ export default function RequestForm() {
       const uploaded = addLocalFiles(selectedFiles);
       setImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to upload images.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to upload images.");
     } finally {
       setUploadingImages(false);
       e.target.value = "";
@@ -75,9 +80,7 @@ export default function RequestForm() {
       const uploaded = addLocalFiles(selectedFiles);
       setFiles((prev) => [...prev, ...uploaded]);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to upload files.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to upload files.");
     } finally {
       setUploadingFiles(false);
       e.target.value = "";
@@ -85,9 +88,17 @@ export default function RequestForm() {
   };
 
   const removeImage = (index: number) =>
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => {
+      const removed = prev[index];
+      if (removed) URL.revokeObjectURL(removed.url);
+      return prev.filter((_, i) => i !== index);
+    });
   const removeFile = (index: number) =>
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setFiles((prev) => {
+      const removed = prev[index];
+      if (removed) URL.revokeObjectURL(removed.url);
+      return prev.filter((_, i) => i !== index);
+    });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -95,7 +106,41 @@ export default function RequestForm() {
     setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const body = new FormData();
+      body.append("_subject", `Sourcing Request: ${form.productName} — ${form.companyName}`);
+      body.append("_captcha", "false");
+      body.append("_template", "table");
+      body.append("Company Name", form.companyName);
+      body.append("Contact Person", form.contactPerson);
+      body.append("Email", form.email);
+      body.append("Phone", form.phone);
+      body.append("Product Name", form.productName);
+      body.append("Quantity", form.quantity);
+      body.append("Specifications", form.specifications);
+      body.append("Description", form.description);
+      body.append("Additional Notes", form.notes);
+      images.forEach((img) => body.append("attachment", img.file));
+      files.forEach((file) => body.append("attachment", file.file));
+
+      const response = await fetch(
+        `https://formsubmit.co/ajax/${CONTACT_EMAIL}`,
+        {
+          method: "POST",
+          body,
+          headers: { Accept: "application/json" },
+        },
+      );
+
+      const data = (await response.json()) as { success?: string; message?: string };
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message ?? "Failed to submit request.");
+      }
+
+      revokeUploadedFiles(images);
+      revokeUploadedFiles(files);
+      setImages([]);
+      setFiles([]);
       setSubmitted(true);
     } catch (err) {
       setError(
@@ -107,6 +152,8 @@ export default function RequestForm() {
   };
 
   const resetForm = () => {
+    revokeUploadedFiles(images);
+    revokeUploadedFiles(files);
     setForm(initialForm);
     setImages([]);
     setFiles([]);
@@ -116,7 +163,8 @@ export default function RequestForm() {
 
   const inputClass =
     "w-full bg-brand-surface-solid/80 border border-brand-border rounded-xl px-4 py-3 text-brand-text text-sm placeholder:text-brand-subtle/70 focus:outline-none focus:border-brand-accent/50 focus:ring-2 focus:ring-brand-accent/10 transition-all duration-200";
-  const labelClass = "block text-xs font-semibold text-brand-muted mb-2 tracking-wide";
+  const labelClass =
+    "block text-xs font-semibold text-brand-muted mb-2 tracking-wide";
 
   return (
     <section id="request" ref={ref} className="section-block">
@@ -150,7 +198,10 @@ export default function RequestForm() {
               <p className="text-base text-brand-muted mb-10 leading-relaxed max-w-md mx-auto">
                 {t.form.successDesc}
               </p>
-              <button onClick={resetForm} className="btn-ghost border border-brand-border">
+              <button
+                onClick={resetForm}
+                className="btn-ghost border border-brand-border"
+              >
                 {t.form.successBack}
               </button>
             </motion.div>
