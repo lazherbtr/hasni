@@ -2,17 +2,23 @@
 
 import { useLanguage } from "@/lib/i18n";
 import { motion, useInView } from "framer-motion";
-import { Award, ChevronDown, ChevronLeft, ChevronRight, Eye, FileCheck, Globe, X } from "lucide-react";
+import {
+  Award,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  FileCheck,
+  Globe,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const TRUST_ICONS = [Award, Globe, FileCheck, Eye];
 
 // Images live in public/ as 1.jpeg, 2.jpeg, ... 33.jpeg
-const TRUST_GALLERY = Array.from(
-  { length: 33 },
-  (_, i) => `/${i + 1}.jpeg`,
-);
+const TRUST_GALLERY = Array.from({ length: 33 }, (_, i) => `/${i + 1}.jpeg`);
 
 export default function TrustSection() {
   const { t } = useLanguage();
@@ -25,7 +31,9 @@ export default function TrustSection() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setTimeout(() => {
+      setMounted(true);
+    }, 0);
   }, []);
 
   const markImageFailed = (index: number) => {
@@ -145,7 +153,10 @@ export default function TrustSection() {
                     if (failedImages[i]) return null;
 
                     return (
-                      <div key={src} className="mb-4 sm:mb-5 break-inside-avoid">
+                      <div
+                        key={src}
+                        className="mb-4 sm:mb-5 break-inside-avoid"
+                      >
                         <button
                           type="button"
                           onClick={() => setActiveGalleryIndex(i)}

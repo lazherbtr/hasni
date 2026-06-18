@@ -5,10 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Mail, Menu, Phone, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
-
-const CONTACT_EMAIL = "Hasnibachiri25@gmail.com";
-const CONTACT_PHONE = "+971 50 778 3497";
-const WHATSAPP_LINK = "https://wa.me/971507783497";
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  WHATSAPP_LINK,
+} from "@/lib/contact";
 
 export default function Navbar() {
   const { t, toggleLang } = useLanguage();
@@ -63,7 +64,7 @@ export default function Navbar() {
             className="inline-flex shrink-0 items-center gap-1.5 hover:text-white transition-colors"
           >
             <Phone className="w-3.5 h-3.5 shrink-0" />
-            <span dir="ltr">{CONTACT_PHONE}</span>
+              <span dir="ltr">{CONTACT_PHONE_DISPLAY}</span>
           </a>
         </div>
       </div>
