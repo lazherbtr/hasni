@@ -2,6 +2,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import Navbar from "@/components/navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
+import IndustriesSection from "@/components/IndustriesSection";
 import ServicesSection from "@/components/ServicesSection";
 import ProcessSection from "@/components/ProcessSection";
 import TrustSection from "@/components/TrustSection";
@@ -27,6 +28,7 @@ export default function Home() {
         <main>
           <HeroSection />
           <AboutSection />
+          <IndustriesSection />
           <ServicesSection />
           <ProcessSection />
           <TrustSection />

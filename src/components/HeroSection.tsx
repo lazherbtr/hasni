@@ -21,7 +21,7 @@ export default function HeroSection() {
   ];
 
   return (
-    <section className="pt-28 sm:pt-32 pb-8 sm:pb-12">
+    <section className="pt-36 sm:pt-40 pb-8 sm:pb-12">
       <div className="site-container">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <motion.div

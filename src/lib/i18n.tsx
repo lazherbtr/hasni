@@ -12,8 +12,8 @@ const translations = {
   en: {
     dir: "ltr" as const,
     nav: {
-      brand: "VERTEX",
-      brandSub: "Sourcing",
+      brand: "HASNI",
+      brandSub: "bachiri",
       services: "Services",
       process: "Process",
       request: "Submit Request",
@@ -34,12 +34,29 @@ const translations = {
       title: "Your Strategic Sourcing Partner",
       p1: "With deep expertise in global supply chains, we act as the critical bridge between your company and the world's most reliable suppliers. Our approach combines meticulous market research with hands-on supplier evaluation to deliver procurement solutions that drive real business value.",
       p2: "Every sourcing engagement begins with understanding your unique requirements — product specifications, quality standards, pricing targets, and delivery timelines. We then leverage our extensive network and analytical methodology to identify, evaluate, and present the optimal supplier options for your consideration.",
+      imageAlt: "HASNI bachiri",
+      imagePlaceholder: "Your photo will appear here",
+      experienceTitle: "5 Years Experience",
+      experienceText:
+        "We act as your dedicated procurement assistant finding, comparing, and securing any product or industrial part you need, anywhere in the world.",
       stat1Label: "Suppliers Vetted",
       stat1Value: "2,400+",
       stat2Label: "Countries Covered",
       stat2Value: "35+",
       stat3Label: "Client Retention",
       stat3Value: "96%",
+    },
+    industries: {
+      label: "Industries",
+      title: "Industries We Support",
+      subtitle:
+        "We support procurement needs across a wide range of industrial and commercial sectors where reliability, speed, and precision are essential.",
+      items: [
+        { title: "Maintenance companies" },
+        { title: "Construction companies" },
+        { title: "Industrial workshops" },
+        { title: "Equipment for all small businesses" },
+      ],
     },
     services: {
       label: "Services",
@@ -128,6 +145,8 @@ const translations = {
           desc: "Complete visibility into our sourcing process — from initial research to final recommendation, with no hidden agendas.",
         },
       ],
+      galleryAlt: "Trust gallery image",
+      galleryPlaceholder: "Image",
     },
     form: {
       label: "Get Started",
@@ -149,7 +168,8 @@ const translations = {
       fileUpload: "Upload Supporting Documents",
       notes: "Additional Notes",
       submit: "Submit Request",
-      submitting: "Analyzing Requirements...",
+      submitting: "Sending to your inbox...",
+      uploading: "Uploading files...",
       dragDrop: "Drag & drop files here, or click to browse",
       successTitle: "Request Submitted Successfully",
       successDesc:
@@ -157,9 +177,9 @@ const translations = {
       successBack: "Submit Another Request",
     },
     footer: {
-      brand: "VERTEX Sourcing",
+      brand: "HASNI bachiri",
       desc: "Professional procurement and sourcing consultancy bridging companies with world-class suppliers.",
-      rights: "© 2025 Vertex Sourcing. All rights reserved.",
+      rights: "© 2025 HASNI bachiri. All rights reserved.",
       privacy: "Privacy Policy",
       terms: "Terms of Service",
     },
@@ -167,8 +187,8 @@ const translations = {
   ar: {
     dir: "rtl" as const,
     nav: {
-      brand: "VERTEX",
-      brandSub: "للتوريد",
+      brand: "HASNI",
+      brandSub: "bachiri",
       services: "خدماتنا",
       process: "آلية العمل",
       request: "تقديم طلب",
@@ -189,12 +209,29 @@ const translations = {
       title: "شريكك الاستراتيجي في التوريد",
       p1: "بخبرة عميقة في سلاسل التوريد العالمية، نعمل كجسر حيوي بين شركتك وأكثر الموردين موثوقية في العالم. يجمع نهجنا بين البحث الدقيق في السوق والتقييم الميداني للموردين لتقديم حلول توريد تحقق قيمة تجارية حقيقية.",
       p2: "تبدأ كل عملية توريد بفهم متطلباتك الفريدة — مواصفات المنتج، ومعايير الجودة، والأسعار المستهدفة، والجداول الزمنية للتسليم. ثم نستفيد من شبكتنا الواسعة ومنهجيتنا التحليلية لتحديد وتقييم وتقديم أفضل خيارات الموردين.",
+      imageAlt: "حسني بشيري",
+      imagePlaceholder: "ستظهر صورتك هنا",
+      experienceTitle: "5 سنوات خبرة",
+      experienceText:
+        "نعمل كمساعد مخصص للمشتريات في العثور على أي منتج أو قطعة صناعية تحتاجها ومقارنتها وتأمينها، في أي مكان في العالم.",
       stat1Label: "مورد تم فحصه",
       stat1Value: "+2,400",
       stat2Label: "دولة مغطاة",
       stat2Value: "+35",
       stat3Label: "معدل الاحتفاظ بالعملاء",
       stat3Value: "%96",
+    },
+    industries: {
+      label: "القطاعات",
+      title: "القطاعات التي ندعمها",
+      subtitle:
+        "ندعم احتياجات المشتريات عبر مجموعة واسعة من القطاعات الصناعية والتجارية حيث الموثوقية والسرعة والدقة ضرورية.",
+      items: [
+        { title: "شركات الصيانة" },
+        { title: "شركات الإنشاء والبناء" },
+        { title: "الورش الصناعية" },
+        { title: "المعدات لجميع الشركات الصغيرة" },
+      ],
     },
     services: {
       label: "خدماتنا",
@@ -282,6 +319,8 @@ const translations = {
           desc: "رؤية كاملة لعملية التوريد — من البحث الأولي إلى التوصية النهائية، بدون أجندات خفية.",
         },
       ],
+      galleryAlt: "صورة المعرض",
+      galleryPlaceholder: "صورة",
     },
     form: {
       label: "ابدأ الآن",
@@ -303,7 +342,8 @@ const translations = {
       fileUpload: "تحميل المستندات الداعمة",
       notes: "ملاحظات إضافية",
       submit: "تقديم الطلب",
-      submitting: "جارٍ تحليل المتطلبات...",
+      submitting: "جارٍ الإرسال إلى بريدك...",
+      uploading: "جارٍ رفع الملفات...",
       dragDrop: "اسحب وأفلت الملفات هنا، أو انقر للاستعراض",
       successTitle: "تم تقديم الطلب بنجاح",
       successDesc:
@@ -311,9 +351,9 @@ const translations = {
       successBack: "تقديم طلب آخر",
     },
     footer: {
-      brand: "VERTEX للتوريد",
+      brand: "HASNI bachiri",
       desc: "استشارات احترافية في المشتريات والتوريد تربط الشركات بموردين عالميين.",
-      rights: "© 2025 Vertex للتوريد. جميع الحقوق محفوظة.",
+      rights: "© 2025 HASNI bachiri. جميع الحقوق محفوظة.",
       privacy: "سياسة الخصوصية",
       terms: "شروط الخدمة",
     },

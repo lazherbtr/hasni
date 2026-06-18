@@ -52,6 +52,7 @@
 }
 
 :root {
+  --contact-bar-height: 2.5rem;
   --background: #faf6f1;
   --foreground: #3d3630;
   --card: #fffcfa;
@@ -171,6 +172,30 @@ html[lang="ar"] {
     @apply bg-gradient-to-l;
   }
 
+  .contact-bar {
+    @apply fixed top-0 inset-x-0 z-[60] h-10 bg-brand-text text-white/90 border-b border-white/10;
+  }
+
+  .contact-bar-inner {
+    @apply max-w-5xl mx-auto px-5 sm:px-8 lg:px-10 flex h-full items-center justify-between gap-3 text-[11px] sm:text-xs;
+  }
+
+  .site-nav-shell {
+    top: var(--contact-bar-height);
+  }
+
+  .site-nav {
+    @apply flex h-14 items-center justify-between px-5 sm:px-6 rounded-full transition-all duration-500;
+  }
+
+  .nav-logo-brand {
+    @apply text-lg font-bold tracking-wide text-brand-text;
+  }
+
+  .nav-logo-sub {
+    @apply text-sm italic text-brand-accent;
+  }
+
   /* Arabic typography — larger, warmer, better fit for RTL */
   html[lang="ar"] .section-label {
     @apply text-sm font-bold tracking-normal normal-case px-5 py-2;
@@ -187,6 +212,28 @@ html[lang="ar"] {
   html[lang="ar"] .btn-primary,
   html[lang="ar"] .btn-ghost {
     @apply text-base font-bold px-8 py-3.5;
+  }
+
+  html[lang="ar"] .site-nav .btn-primary,
+  html[lang="ar"] .site-nav .btn-ghost {
+    @apply text-sm font-semibold px-5 py-2.5;
+  }
+
+  html[lang="ar"] .site-nav .btn-primary {
+    @apply text-xs;
+  }
+
+  html[lang="ar"] .nav-logo-brand {
+    @apply text-lg font-bold;
+  }
+
+  html[lang="ar"] .nav-logo-sub {
+    @apply text-sm italic;
+  }
+
+  html[lang="ar"] .contact-bar,
+  html[lang="ar"] .contact-bar-inner {
+    @apply text-[11px] sm:text-xs;
   }
 
   html[lang="ar"] .hero-title {
@@ -219,10 +266,6 @@ html[lang="ar"] {
 
   html[lang="ar"] .soft-card .card-title:not(.text-xl) {
     @apply text-lg sm:text-xl;
-  }
-
-  html[lang="ar"] nav .font-display {
-    @apply text-2xl;
   }
 
   html[lang="ar"] input,

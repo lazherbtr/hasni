@@ -33,7 +33,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VERTEX Sourcing | Global Procurement & Sourcing Consultancy",
+  title: "HASNI bachiri | Global Procurement & Sourcing Consultancy",
   description:
     "Professional procurement and sourcing consultancy bridging companies with world-class suppliers.",
 };

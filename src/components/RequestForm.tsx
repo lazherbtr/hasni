@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/lib/i18n";
+import { useUploadThing } from "@/lib/uploadthing";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { CheckCircle2, FileText, Loader2, Upload, X } from "lucide-react";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
@@ -18,38 +19,54 @@ const initialForm = {
 };
 
 type FormData = typeof initialForm;
-type UploadedFile = { name: string; url: string; file: File };
-
-const CONTACT_EMAIL = "lazherbou3@gmail.com";
-
-function addLocalFiles(selectedFiles: File[]): UploadedFile[] {
-  return selectedFiles.map((file) => ({
-    name: file.name,
-    url: URL.createObjectURL(file),
-    file,
-  }));
-}
-
-function revokeUploadedFiles(uploads: UploadedFile[]) {
-  uploads.forEach((upload) => URL.revokeObjectURL(upload.url));
-}
+type StoredFile = { name: string; url: string };
 
 export default function RequestForm() {
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   const [form, setForm] = useState(initialForm);
-  const [images, setImages] = useState<UploadedFile[]>([]);
-  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [images, setImages] = useState<StoredFile[]>([]);
+  const [files, setFiles] = useState<StoredFile[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [uploadingImages, setUploadingImages] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { startUpload: startImageUpload, isUploading: uploadingImages } =
+    useUploadThing("imageUploader", {
+      onClientUploadComplete: (uploaded) => {
+        setImages((prev) => [
+          ...prev,
+          ...uploaded.map((file) => ({
+            name: file.name,
+            url: file.url,
+          })),
+        ]);
+      },
+      onUploadError: (err) => {
+        setError(err.message || "Failed to upload images.");
+      },
+    });
+
+  const { startUpload: startDocumentUpload, isUploading: uploadingFiles } =
+    useUploadThing("documentUploader", {
+      onClientUploadComplete: (uploaded) => {
+        setFiles((prev) => [
+          ...prev,
+          ...uploaded.map((file) => ({
+            name: file.name,
+            url: file.url,
+          })),
+        ]);
+      },
+      onUploadError: (err) => {
+        setError(err.message || "Failed to upload files.");
+      },
+    });
 
   const handleChange = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -58,87 +75,49 @@ export default function RequestForm() {
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files ?? []);
     if (!selectedFiles.length) return;
-    setUploadingImages(true);
     setError(null);
-    try {
-      const uploaded = addLocalFiles(selectedFiles);
-      setImages((prev) => [...prev, ...uploaded]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload images.");
-    } finally {
-      setUploadingImages(false);
-      e.target.value = "";
-    }
+    await startImageUpload(selectedFiles);
+    e.target.value = "";
   };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files ?? []);
     if (!selectedFiles.length) return;
-    setUploadingFiles(true);
     setError(null);
-    try {
-      const uploaded = addLocalFiles(selectedFiles);
-      setFiles((prev) => [...prev, ...uploaded]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload files.");
-    } finally {
-      setUploadingFiles(false);
-      e.target.value = "";
-    }
+    await startDocumentUpload(selectedFiles);
+    e.target.value = "";
   };
 
   const removeImage = (index: number) =>
-    setImages((prev) => {
-      const removed = prev[index];
-      if (removed) URL.revokeObjectURL(removed.url);
-      return prev.filter((_, i) => i !== index);
-    });
+    setImages((prev) => prev.filter((_, i) => i !== index));
+
   const removeFile = (index: number) =>
-    setFiles((prev) => {
-      const removed = prev[index];
-      if (removed) URL.revokeObjectURL(removed.url);
-      return prev.filter((_, i) => i !== index);
-    });
+    setFiles((prev) => prev.filter((_, i) => i !== index));
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (uploadingImages || uploadingFiles) return;
+
     setSubmitting(true);
     setError(null);
 
     try {
-      const body = new FormData();
-      body.append("_subject", `Sourcing Request: ${form.productName} — ${form.companyName}`);
-      body.append("_captcha", "false");
-      body.append("_template", "table");
-      body.append("Company Name", form.companyName);
-      body.append("Contact Person", form.contactPerson);
-      body.append("Email", form.email);
-      body.append("Phone", form.phone);
-      body.append("Product Name", form.productName);
-      body.append("Quantity", form.quantity);
-      body.append("Specifications", form.specifications);
-      body.append("Description", form.description);
-      body.append("Additional Notes", form.notes);
-      images.forEach((img) => body.append("attachment", img.file));
-      files.forEach((file) => body.append("attachment", file.file));
+      const response = await fetch("/api/submit-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          images,
+          documents: files,
+        }),
+      });
 
-      const response = await fetch(
-        `https://formsubmit.co/ajax/${CONTACT_EMAIL}`,
-        {
-          method: "POST",
-          body,
-          headers: { Accept: "application/json" },
-        },
-      );
+      const data = (await response.json()) as { error?: string };
 
-      const data = (await response.json()) as { success?: string; message?: string };
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message ?? "Failed to submit request.");
+      if (!response.ok) {
+        throw new Error(data.error ?? "Failed to submit request.");
       }
 
-      revokeUploadedFiles(images);
-      revokeUploadedFiles(files);
       setImages([]);
       setFiles([]);
       setSubmitted(true);
@@ -152,14 +131,14 @@ export default function RequestForm() {
   };
 
   const resetForm = () => {
-    revokeUploadedFiles(images);
-    revokeUploadedFiles(files);
     setForm(initialForm);
     setImages([]);
     setFiles([]);
     setSubmitted(false);
     setError(null);
   };
+
+  const isBusy = submitting || uploadingImages || uploadingFiles;
 
   const inputClass =
     "w-full bg-brand-surface-solid/80 border border-brand-border rounded-xl px-4 py-3 text-brand-text text-sm placeholder:text-brand-subtle/70 focus:outline-none focus:border-brand-accent/50 focus:ring-2 focus:ring-brand-accent/10 transition-all duration-200";
@@ -360,8 +339,9 @@ export default function RequestForm() {
                           />
                           <button
                             type="button"
+                            disabled={uploadingImages}
                             onClick={() => imageInputRef.current?.click()}
-                            className="w-full border border-dashed border-brand-border rounded-2xl py-7 flex flex-col items-center gap-2 hover:border-brand-accent/40 hover:bg-brand-accent-soft/50 transition-all duration-300 group"
+                            className="w-full border border-dashed border-brand-border rounded-2xl py-7 flex flex-col items-center gap-2 hover:border-brand-accent/40 hover:bg-brand-accent-soft/50 transition-all duration-300 group disabled:opacity-60"
                           >
                             {uploadingImages ? (
                               <Loader2 className="w-5 h-5 text-brand-subtle animate-spin" />
@@ -369,18 +349,20 @@ export default function RequestForm() {
                               <Upload className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                             )}
                             <span className="text-xs text-brand-subtle">
-                              {t.form.dragDrop}
+                              {uploadingImages
+                                ? t.form.uploading
+                                : t.form.dragDrop}
                             </span>
                           </button>
                           {images.length > 0 && (
                             <div className="mt-3 space-y-2">
                               {images.map((img, i) => (
                                 <div
-                                  key={i}
+                                  key={`${img.url}-${i}`}
                                   className="flex items-center justify-between text-xs text-brand-muted py-1"
                                 >
-                                  <span className="truncate flex-1">
-                                    {img.name}
+                                  <span className="truncate flex-1 text-brand-sage">
+                                    ✓ {img.name}
                                   </span>
                                   <button
                                     type="button"
@@ -407,8 +389,9 @@ export default function RequestForm() {
                           />
                           <button
                             type="button"
+                            disabled={uploadingFiles}
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full border border-dashed border-brand-border rounded-2xl py-7 flex flex-col items-center gap-2 hover:border-brand-accent/40 hover:bg-brand-accent-soft/50 transition-all duration-300 group"
+                            className="w-full border border-dashed border-brand-border rounded-2xl py-7 flex flex-col items-center gap-2 hover:border-brand-accent/40 hover:bg-brand-accent-soft/50 transition-all duration-300 group disabled:opacity-60"
                           >
                             {uploadingFiles ? (
                               <Loader2 className="w-5 h-5 text-brand-subtle animate-spin" />
@@ -416,18 +399,20 @@ export default function RequestForm() {
                               <FileText className="w-5 h-5 text-brand-accent group-hover:scale-110 transition-transform" />
                             )}
                             <span className="text-xs text-brand-subtle">
-                              {t.form.dragDrop}
+                              {uploadingFiles
+                                ? t.form.uploading
+                                : t.form.dragDrop}
                             </span>
                           </button>
                           {files.length > 0 && (
                             <div className="mt-3 space-y-2">
                               {files.map((file, i) => (
                                 <div
-                                  key={i}
+                                  key={`${file.url}-${i}`}
                                   className="flex items-center justify-between text-xs text-brand-muted py-1"
                                 >
-                                  <span className="truncate flex-1">
-                                    {file.name}
+                                  <span className="truncate flex-1 text-brand-sage">
+                                    ✓ {file.name}
                                   </span>
                                   <button
                                     type="button"
@@ -462,15 +447,19 @@ export default function RequestForm() {
 
                       <motion.button
                         type="submit"
-                        disabled={submitting}
-                        whileHover={{ scale: submitting ? 1 : 1.02 }}
+                        disabled={isBusy}
+                        whileHover={{ scale: isBusy ? 1 : 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         className="w-full btn-primary !py-3.5 disabled:opacity-70 flex items-center justify-center gap-2 mt-2"
                       >
-                        {submitting && (
+                        {isBusy && (
                           <Loader2 className="w-5 h-5 animate-spin" />
                         )}
-                        {submitting ? t.form.submitting : t.form.submit}
+                        {submitting
+                          ? t.form.submitting
+                          : uploadingImages || uploadingFiles
+                            ? t.form.uploading
+                            : t.form.submit}
                       </motion.button>
                     </form>
                   </div>
