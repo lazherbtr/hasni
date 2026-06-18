@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 import { useRef, useState } from "react";
 
 // Replace by adding your photo at: public/images/about.jpg
-const ABOUT_IMAGE = "/images/about.jpg";
+const ABOUT_IMAGE = "/aboutme.jpeg";
 
 export default function AboutSection() {
   const { t } = useLanguage();
@@ -75,8 +75,12 @@ export default function AboutSection() {
                   {t.about.experienceText}
                 </p>
               </motion.div>
-              <p className="text-base leading-[1.85] text-brand-muted">{t.about.p1}</p>
-              <p className="text-base leading-[1.85] text-brand-muted">{t.about.p2}</p>
+              <p className="text-base leading-[1.85] text-brand-muted">
+                {t.about.p1}
+              </p>
+              <p className="text-base leading-[1.85] text-brand-muted">
+                {t.about.p2}
+              </p>
             </div>
           </div>
         </motion.div>

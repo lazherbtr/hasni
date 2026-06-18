@@ -147,6 +147,10 @@ const translations = {
       ],
       galleryAlt: "Trust gallery image",
       galleryPlaceholder: "Image",
+      galleryScrollHint: "Scroll to see all photos",
+      galleryClose: "Close image",
+      galleryPrev: "Previous image",
+      galleryNext: "Next image",
     },
     form: {
       label: "Get Started",
@@ -321,6 +325,10 @@ const translations = {
       ],
       galleryAlt: "صورة المعرض",
       galleryPlaceholder: "صورة",
+      galleryScrollHint: "مرّر لعرض جميع الصور",
+      galleryClose: "إغلاق الصورة",
+      galleryPrev: "الصورة السابقة",
+      galleryNext: "الصورة التالية",
     },
     form: {
       label: "ابدأ الآن",
