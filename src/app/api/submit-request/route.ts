@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const CONTACT_EMAIL =
-  process.env.CONTACT_EMAIL ?? "Hasnibachiri25@gmail.com";
+// Resend testing mode (onboarding@resend.dev) only delivers to your Resend account email.
+const CONTACT_EMAIL = (
+  process.env.CONTACT_EMAIL ?? "hasnibachiri25@gmail.com"
+).toLowerCase();
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "HASNI bachiri <onboarding@resend.dev>";
 const MAX_ATTACHMENT_SIZE = 4 * 1024 * 1024;
@@ -139,7 +141,10 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      const message = error.message.includes("only send testing emails")
+        ? "Email is in Resend testing mode. Set CONTACT_EMAIL to hasnibachiri25@gmail.com in Vercel, or verify a domain at resend.com/domains."
+        : error.message;
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
